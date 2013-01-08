@@ -1,9 +1,8 @@
-;; gonano  Ciro_Mattia Gonano 0000122354
-;; mseno   Mauro Seno         0000122360
-;; mvillan Mattia Villan      0000122357
-
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname labsolver) (read-case-sensitive #t) (teachpacks ((lib "gui.ss" "teachpack" "htdp") (lib "draw.ss" "teachpack" "htdp") (lib "graphing.ss" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "gui.ss" "teachpack" "htdp") (lib "draw.ss" "teachpack" "htdp") (lib "graphing.ss" "teachpack" "htdp")))))
              ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-             ;;;;;;;; LABYRINTH SOLVER� - version 1.2 ;;;;;;;;
+             ;;;;;;;; LABYRINTH SOLVER - version 1.2.1 ;;;;;;;;
              ;;;;;;;;;;;;;; for Scheme language ;;;;;;;;;;;;;;;
              ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -32,7 +31,7 @@
 ;;                          di avvio programma "risolvi", la funzione di ricerca della     ;;
 ;;                          entrata "find-start" e la funzione higher-order "extract",     ;;
 ;;                          per estrarre un elemento in posizione n da una lista           ;;
-;;                          (l'elemento pu� essere un numero oppure una lista, dipende     ;;
+;;                          (l'elemento può essere un numero oppure una lista, dipende     ;;
 ;;                          dalla lista data)                                              ;;
 ;;                                                                                         ;;
 ;; versione 0.2 ->  inserita la funzione "count-el" per determinare elementi di una lista  ;;
@@ -57,7 +56,7 @@
 ;;                  inserita la funzione "relist-2" che ridisegna una lista di liste       ;;
 ;;                          morfando un numero all'interno                                 ;;
 ;;                  inserita in via sperimentale la funzione "invway" che permette di fare ;;
-;;                          �retromarcia� ripercorrendo la lista "croxx" di "xcorso"       ;;
+;;                          "retromarcia" ripercorrendo la lista "croxx" di "xcorso"       ;;
 ;;                                                                                         ;;
 ;; versione 0.3 ->  completata e resa funzionante al 90% la funzione "invway"              ;;
 ;;                  inserite le funzioni di morphing "relist-5" e "relist-6" per gestire   ;;
@@ -69,9 +68,9 @@
 ;;                  fixata la funzione "invway" con l'aggiunta dell'argomento "prev" alla  ;;
 ;;                          funzione "xcorso"                                              ;;
 ;;                  inserito l'argomento "prev" nella funzione "xcorso" per avere una      ;;
-;;                          lista di tutte le �provenienze� delle varie celle.             ;;
+;;                          lista di tutte le "provenienze" delle varie celle.             ;;
 ;;                  inserita la funzione "roundup" che arrotonda per eccesso un numero     ;;
-;;                          (servir� per le prossime implementazioni)                      ;;
+;;                          (servirà per le prossime implementazioni)                      ;;
 ;;                  inserite le definizioni di alcune costanti utilizzate dalle routines   ;;
 ;;                          grafiche                                                       ;;
 ;;                  ampliate le funzioni del tipo "relist" in previsione di prossime       ;;
@@ -91,7 +90,7 @@
 ;;                                                                                         ;;
 ;; versione 0.4c -> fixata completamente la parte grafica di interfaccia (bottoni)         ;;
 ;;                  completata la grafica della legenda                                    ;;
-;;                  aggiunte numerose linee di commento per le sezioni pi� illeggibili     ;;
+;;                  aggiunte numerose linee di commento per le sezioni più illeggibili     ;;
 ;;                                                                                         ;;
 ;; versione 0.4d -> quasi attiva al 100% la parte di ricerca e gestione soluzioni multiple ;;
 ;;                  completati tutti i messaggi e gli eventi mouse/tastiera                ;;
@@ -103,7 +102,7 @@
 ;; versione 1.1  -> riscontrati enormi problemi con la versione 1.0 (praticamente era      ;;
 ;;                          NON ATTIVA)                                                    ;;
 ;;                  versione di controllo, la versione ATTIVA dopo le dovute modifiche     ;;
-;;                          sar� la 1.2                                                    ;;
+;;                          sarà la 1.2                                                    ;;
 ;;                                                                                         ;;
 ;; versione 1.2  -> versione ATTIVA                                                        ;;
 ;;                  migliorato l'algoritmo di ricerca soluzioni multiple                   ;;
@@ -113,7 +112,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; CONFIGURAZIONE LINGUAGGIO RICHIESTA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                                         ;;
-;; Il presente programma � stato sviluppato con PLT DrScheme v.103 usando costrutti        ;;
+;; Il presente programma è stato sviluppato con PLT DrScheme v.103 usando costrutti        ;;
 ;; funzionali.                                                                             ;;
 ;; Le caratteristiche usate sono:                                                          ;;
 ;;                           - Language: Advanced Student                                  ;;
@@ -124,7 +123,7 @@
 ;;                                                                                         ;;
 ;; Non si assicura il funzionamento con le specifiche del MIT Scheme (in particolar modo   ;;
 ;;     per la parte imperativa e per i comandi che sono stati modficiati da PLT)           ;;
-;; E' possibile rendere funzionante il programma anche nella modalit� MrEd, avendo cura di ;;
+;; E' possibile rendere funzionante il programma anche nella modalità MrEd, avendo cura di ;;
 ;;     caricare la libreria graphics.ss                                                    ;;
 ;; Il programma NON E' funzionante con linguaggi di livello inferiore all'Advanced Student ;;
 ;;                                                                                         ;;
@@ -132,9 +131,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                                         ;;
-;; Definizione del tipo di dato "labirinto": un labirinto � una lista di liste di numeri.  ;;
+;; Definizione del tipo di dato "labirinto": un labirinto è una lista di liste di numeri.  ;;
 ;;                                                                                         ;;
-;; Definizione del tipo di dato "soluzione": una soluzione � una lista di liste di numeri. ;;
+;; Definizione del tipo di dato "soluzione": una soluzione è una lista di liste di numeri. ;;
 ;;                                                                                         ;;
 ;; Tali numeri sono identificativi del tipo della singola cella, e nella fattispecie:      ;;
 ;;                   0 -> muro                                                             ;;
@@ -285,13 +284,13 @@
 
 ;; incolla la lista l2 in coda alla lista l1;;
 
-;;myappend: lista-di-numeri, lista-di-numeri->lista-di-numeri;;
+;;append: lista-di-numeri, lista-di-numeri->lista-di-numeri;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (myappend l1 l2)
+(define (append l1 l2)
   (cond
     [(empty? l1) l2]
-    [else (cons (first l1) (myappend (rest l1) l2))]))
+    [else (cons (first l1) (append (rest l1) l2))]))
 
 ;; restituisce il numero degli elementi presenti in
 ;; una lista l;;
@@ -354,21 +353,21 @@
 ;; definizioni contenuti iniziali della GUI ;;;;;;;;;;;;;;;
 
 (define text1 (make-message "WELCOME!"))
-(define text2 (make-message "This is the Labyrinth Solver� v.1.2 for SCHEME"))
-(define text3 (make-message "By RavenTeam�:"))
-(define text4 (make-message "  - Ciro *Lestat* Gonano (gonano@cs.unibo.it)"))
-(define text5 (make-message "  - Mattia Villan (mvillan@cs.unibo.it)"))
-(define text6 (make-message "  - Mauro Seno (mseno@cs.unibo.it)"))
+(define text2 (make-message "This is the Labyrinth Solver v.1.2 for SCHEME"))
+(define text3 (make-message "By RavenTeam:"))
+(define text4 (make-message "  - Ciro *Lestat* Gonano (ciromattia@gmail.com)"))
+(define text5 (make-message "  - Mattia Villan"))
+(define text6 (make-message "  - Mauro Seno (mauroseno@gmail.com)"))
 (define text7 (make-message " "))
 (define text8 (make-message "Choose the pre-constructed labyrinth you want to solve or"))
-(define text9 (make-message "choose �random labyrinth� to have a instant-generated"))
+(define text9 (make-message "choose 'random labyrinth' to have a instant-generated"))
 (define text10 (make-message "labyrinth. If you choose a pre-constructed labyrinth"))
 (define text11 (make-message "the input for rows and columns WILL NOT be considered."))
 (define text12 (make-message " "))
 (define text13 (make-message "Remember that after the generation you will be able to"))
 (define text14 (make-message "modify each single cell in the labyrinth."))
 (define text15 (make-message " "))
-(define text16 (make-message "We hope that you have fun with Labyrinth Solver�."))
+(define text16 (make-message "We hope that you have fun with Labyrinth Solver."))
 (define text17 (make-message "Plz report any eventual bug to our mail addresses. Thx!!!"))
 (define text18 (make-message "Enjoy!"))
 (define text19 (make-message " "))
@@ -385,7 +384,7 @@
 
 ;; definizione pulsante "Create labyrinth!": avvia il programma
 ;; dopo aver verificato la choice, settato le costanti, e definito
-;; il labirinto sul quale si dovr� lavorare.
+;; il labirinto sul quale si dovrà lavorare.
 (define bottok (make-button "Create labyrinth!" (lambda (x)
                                                   (begin
                                                     (begin
@@ -481,7 +480,7 @@
 
 ;; definisce la funzione "start" che avvia all'inizio il prg;;
 
-(define (mystart useless)
+(define (start useless)
   (begin
     (create-window (list (list text1)
                          (list text2)
@@ -551,8 +550,8 @@
     (clear-msgbox 'useless)
     ((draw-string princ_view)(make-posn 20 513) "Click on 'New' to make a new labyrinth, on 'Modify' to modify this labyrinth,")
     ((draw-string princ_view)(make-posn 20 514) "Click on 'New' to make a new labyrinth, on 'Modify' to modify this labyrinth,")
-    ((draw-string princ_view)(make-posn 20 533) "on 'Solve' to enter in �Solution mode�, or 'Exit' to close the program.")
-    ((draw-string princ_view)(make-posn 20 534) "on 'Solve' to enter in �Solution mode�, or 'Exit' to close the program.")))
+    ((draw-string princ_view)(make-posn 20 533) "on 'Solve' to enter in 'Solution mode', or 'Exit' to close the program.")
+    ((draw-string princ_view)(make-posn 20 534) "on 'Solve' to enter in 'Solution mode', or 'Exit' to close the program.")))
 
 ;;visualizza messaggio "solving the labyrinth,....";;
 
@@ -683,7 +682,7 @@
     [else (cons (list_rand 1) (lab_rand (+ 1 curr-row)))]))
 
 ;; crea una lista di lunghezza COLS dove ogni elemento
-;; � casualmente settato a 0|1
+;; è casualmente settato a 0|1
 
 ;;list_rand: numero->lista-di-numeri;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -787,8 +786,8 @@
 ;; su princ_view
 (define lab_view (open-pixmap "lab_base" 640 480))
 
-;; finestra principale 800x580 dove sar� contenuto tutto
-(define princ_view (open-viewport "Labyrinth Solver� v.1.2" 800 580))
+;; finestra principale 800x580 dove sarà contenuto tutto
+(define princ_view (open-viewport "Labyrinth Solver v.1.2" 800 580))
 
 ;; funzione che disegna una trama sfumata in un rettangolo;;
 
@@ -1224,7 +1223,7 @@
                                          (copy-viewport lab_view princ_view)
                                          (onclick_modify 'useless))]
                                       [else (begin
-                                              (error 'onclick_modify "cell not switchable; please report to gonano@cs.unibo.it")
+                                              (error 'onclick_modify "cell not switchable; please report to ciromattia@gmail.com")
                                               (onclick_modify 'useless))]))]
         [else (onclick_modify 'useless)]))))
 
@@ -1306,7 +1305,7 @@
     (draw_grid 1 s)
     (copy-viewport lab_view princ_view)))
 
-;; funzione che gestisce la possibilit� di un labirinto senza soluzione
+;; funzione che gestisce la possibilità di un labirinto senza soluzione
 (define (nosolution s)
   (begin
     (draw_grid 1 s)
@@ -1392,7 +1391,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;; funzione xcorso -> principale x soluzione ;;;;;;;;;;;
 ;; i "begin", i "display" e i "newline" sono stati inseriti per ;;
-;; il debugging, come feedback pi� chiaro delle azioni del prg. ;;
+;; il debugging, come feedback più chiaro delle azioni del prg. ;;
 ;;;;;;;;;  Nella versione finale del prg NON ci saranno. ;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1520,7 +1519,7 @@
             [else (error 'debug_prev "Malformed construction")])]))
 
 ;; ritorna una lista contenente le soluzioni possibili in base alla soluzione trovata,
-;; la prima soluzione della lista � quella da usare per ripetere la funzione
+;; la prima soluzione della lista è quella da usare per ripetere la funzione
 
 ;;sifs: lista-di-liste-di-numeri, lista-di-numeri, lista-di-numeri -> lista-di-liste-di-liste-di-numeri;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1532,7 +1531,7 @@
             [(empty? (risolvi (close-way s ROWS POS_GOAL croxx prev nbivio))) (cons empty (sifs s croxx prev (+ nbivio 1) maxbivi))]
             [(> 2 (howmany 1 (first (rest (risolvi (close-way s ROWS POS_GOAL croxx prev nbivio))))))
              (cons (risolvi (close-way s ROWS POS_GOAL croxx prev nbivio)) empty)]
-            [else (myappend (myappend (search-sols (close-way s ROWS POS_GOAL croxx prev nbivio))
+            [else (append (append (search-sols (close-way s ROWS POS_GOAL croxx prev nbivio))
                                   (sifs s croxx prev (+ nbivio 1) maxbivi))
                           (cons (risolvi (close-way s ROWS POS_GOAL croxx prev nbivio)) empty))])]))
 
@@ -1545,7 +1544,7 @@
   (cond
     [(empty? (risolvi s)) empty]
     [(> 2 (howmany 1 (first (rest (risolvi s))))) (cons (risolvi s) empty)]
-    [else (myappend (sifs s
+    [else (append (sifs s
                         (first (rest (risolvi s)))
                         (first (rest (rest (risolvi s))))
                         2
@@ -1554,4 +1553,4 @@
 
 ;;;;;;;;;;;;;;SPERIMENTALE;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(mystart 'useless)
+(start 'useless)
